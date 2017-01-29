@@ -28,6 +28,10 @@ const byte change = invert - normal;
 const int baseMin = 0; // verified by startup calibration
 const int baseMax = 1000; // need to check this
 
+// smoothing constants
+const int numReadings = 10;
+const int filterWeight = 4; // higerh = more smoothing
+
 // misc vars
 volatile byte flipPos = normal; // volatile because it's ref'd inside an ISR
 volatile byte coinsLeft = 0; // keeps track of coins left. assumes 10 coins when flipped
@@ -35,9 +39,10 @@ volatile byte isFlipping = 0;
 int pos = 1000;
 int elbpos = 150;
 
-// deadzone vars
-int basePrevious = 0;
-int elbowPrevious = 0;
+// running averages
+int baseAvg = 0;
+int elbowAvg = 0;
+int effAvg = 0;
 
 void unfold() {
   // put your setup code here, to run once:
@@ -121,17 +126,21 @@ void loop() {
   elbowPos = constrain(elbowPos,20,170);
   int effectorPos = analogRead(effectorPotPin);
 
-
+  for (int i = 0; i < numReadings; i++) {
+    baseAvg = baseAvg + (basePos - baseAvg) >> filterWeight;
+    elbowAvg = elbowAvg + (elbowPos - elbowAvg) >> filterWeight;
+    effAvg = effAvg + (effectorPos - effAvg) >> filterWeight;   
+  }
   // stepper moveTo and runs
   //if(abs(basePos - basePrevious) > 3)
-  base.moveTo(basePos);
+  base.moveTo(baseAvg);
   //if(abs(elbowPos-elbowPrevious) > 3) 
-  elbow.moveTo(elbowPos);
+  elbow.moveTo(elbowAvg);
 
   base.run();
   elbow.run();
 
-  seg3.write(map(effectorPos,0,1023,0,180));
+  seg3.write(map(effAvg,0,1023,0,180));
   //basePrevious = basePos;
   //elbowPrevious = elbowPos;
   
