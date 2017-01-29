@@ -1,3 +1,5 @@
+#include <ResponsiveAnalogRead.h>
+
 #include <Servo.h>
 
 #include <AccelStepper.h>
@@ -16,6 +18,11 @@ const byte basePotPin = A7;
 const byte elbowPotPin = A8;
 const byte effectorPotPin = A9; // manually adjust how "open" the end effector is
 
+//smoothed analog inputs
+ResponsiveAnalogRead baseReading(basePotPin,true);
+ResponsiveAnalogRead elbowReading(elbowPotPin,true);
+ResponsiveAnalogRead effReading(effectorPotPin,true);
+
 // add some buttons or whatever
 const byte flip = 22; // not actually used yet
 const byte refoldButton = 24; // to be implemented for that bonus
@@ -28,9 +35,7 @@ const byte change = invert - normal;
 const int baseMin = 0; // verified by startup calibration
 const int baseMax = 1000; // need to check this
 
-// smoothing constants
-const int numReadings = 10;
-const int filterWeight = 4; // higerh = more smoothing
+
 
 // misc vars
 volatile byte flipPos = normal; // volatile because it's ref'd inside an ISR
@@ -39,10 +44,6 @@ volatile byte isFlipping = 0;
 int pos = 1000;
 int elbpos = 150;
 
-// running averages
-int baseAvg = 0;
-int elbowAvg = 0;
-int effAvg = 0;
 
 void unfold() {
   // put your setup code here, to run once:
@@ -115,32 +116,16 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
-  
-  // grab analog readings
-  // also map them to appropriate ranges
-  int basePos = analogRead(basePotPin);
-  basePos = map(basePos,0,1023,0,980);
-  basePos = constrain(basePos,0,980);
-  int elbowPos = analogRead(elbowPotPin);
-  elbowPos = map(elbowPos, 69, 1013, 20, 170);
-  elbowPos = constrain(elbowPos,20,170);
-  int effectorPos = analogRead(effectorPotPin);
-
-  for (int i = 0; i < numReadings; i++) {
-    baseAvg = baseAvg + (basePos - baseAvg) >> filterWeight;
-    elbowAvg = elbowAvg + (elbowPos - elbowAvg) >> filterWeight;
-    effAvg = effAvg + (effectorPos - effAvg) >> filterWeight;   
-  }
   // stepper moveTo and runs
   //if(abs(basePos - basePrevious) > 3)
-  base.moveTo(baseAvg);
+  base.moveTo(baseReading.getValue());
   //if(abs(elbowPos-elbowPrevious) > 3) 
-  elbow.moveTo(elbowAvg);
+  elbow.moveTo(elbowReading.getValue());
 
   base.run();
   elbow.run();
 
-  seg3.write(map(effAvg,0,1023,0,180));
+  seg3.write(map(effReading.getValue(),0,1023,0,180));
   //basePrevious = basePos;
   //elbowPrevious = elbowPos;
   
