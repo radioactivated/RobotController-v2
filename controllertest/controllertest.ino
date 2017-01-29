@@ -50,11 +50,11 @@ void unfold() {
 
   elbow.moveTo(20);
   while(elbow.distanceToGo() != 0) elbow.run();
-  delay(200);
+  delay(100);
 
   hinge.moveTo(75);
   while(hinge.distanceToGo() != 0) hinge.run();
-  delay(200);
+  delay(100);
 
   pinMode(3,OUTPUT);
   digitalWrite(3,HIGH);
@@ -85,12 +85,12 @@ void unfold() {
   elbow.stop();
   base.setCurrentPosition(0);
   elbow.setCurrentPosition(0);
-  delay(200);
+  delay(100);
   base.moveTo(pos);
   elbow.moveTo(elbpos);
   
-  delay(500);
-  seg3.attach(6);
+  delay(100);
+  seg3.attach(200);
   seg3.write(45);
   delay(100);
   elbow.moveTo(40);
@@ -98,7 +98,7 @@ void unfold() {
   delay(100);
   elbow.moveTo(elbpos);
   seg3.write(90);
-  delay(200);
+  delay(50);
 }
 
 void setup() {
