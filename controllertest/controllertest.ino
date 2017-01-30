@@ -91,17 +91,17 @@ void unfold() {
   elbow.stop();
   base.setCurrentPosition(0);
   elbow.setCurrentPosition(0);
-  //delay(100);
+  delay(100);
   base.moveTo(pos);
   elbow.moveTo(elbpos);
   
-  //delay(100);
+  delay(100);
   seg3.attach(6);
   seg3.write(45);
-  //delay(100);
+  delay(100);
   elbow.moveTo(40);
   while(elbow.distanceToGo() != 0) elbow.run();
-  //delay(100);
+  delay(100);
   elbow.moveTo(elbpos);
   seg3.write(90);
   delay(50);
