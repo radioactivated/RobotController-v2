@@ -96,7 +96,7 @@ void unfold() {
   elbow.moveTo(elbpos);
   
   //delay(100);
-  seg3.attach(200);
+  seg3.attach(6);
   seg3.write(45);
   //delay(100);
   elbow.moveTo(40);
