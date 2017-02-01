@@ -116,11 +116,22 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
+  // update analogValues
+  baseReading.update();
+  elbowReading.update();
+  effReading.update();
+
+  int basePos = baseReading.getValue();
+  basePos = map(basePos,0,1023,0,980);
+  basePos = constrain(basePos,0,980);
+  int elbowPos = elbowReading.getValue();
+  elbowPos = map(elbowPos, 69, 1013, 20, 170);
+  elbowPos = constrain(elbowPos,20,170);
   // stepper moveTo and runs
   //if(abs(basePos - basePrevious) > 3)
-  base.moveTo(baseReading.getValue());
+  base.moveTo(basePos);
   //if(abs(elbowPos-elbowPrevious) > 3) 
-  elbow.moveTo(elbowReading.getValue());
+  elbow.moveTo(elbowPos);
 
   base.run();
   elbow.run();
