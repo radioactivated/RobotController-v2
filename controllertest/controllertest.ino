@@ -1,4 +1,4 @@
-#include <ResponsiveAnalogRead.h>
+// #include <ResponsiveAnalogRead.h>
 
 #include <Servo.h>
 
@@ -9,6 +9,7 @@
 AccelStepper hinge(AccelStepper :: FULL4WIRE,39,41,43,45);
 
 Servo seg3;
+Servo claw;
 
 AccelStepper base(AccelStepper :: FULL2WIRE,12,13);
 AccelStepper elbow(AccelStepper :: FULL4WIRE,47,49,51,53);; // enable on 50
@@ -35,15 +36,12 @@ const byte change = invert - normal;
 const int baseMin = 0; // verified by startup calibration
 const int baseMax = 1000; // need to check this
 
-
-
 // misc vars
-volatile byte flipPos = normal; // volatile because it's ref'd inside an ISR
-volatile byte coinsLeft = 0; // keeps track of coins left. assumes 10 coins when flipped
-volatile byte isFlipping = 0;
 int pos = 1000;
 int elbpos = 150;
 
+// interrupt vars
+volatile char claw_moving_dir = 0;
 
 void unfold() {
   // put your setup code here, to run once:
@@ -112,6 +110,13 @@ void setup() {
   unfold();
   // set user inputs, digital
   // TODO: actually map ISRs to interrupt pins
+  // obviously the buttons have to be on the right pins
+  // and as it is now they have to be a pulldown resistor config
+  claw.attach(22); // pin number TBD
+  attachInterrupt(digitalPinToInterrupt(20),isr_left_press,RISING); // check parameters against hardware config
+  attachInterrupt(digitalPinToInterrupt(20),isr_release,FALLING);
+  attachInterrupt(digitalPinToInterrupt(21),isr_release,FALLING);
+  attachInterrupt(digitalPinToInterrupt(21),isr_right_press,RISING);
 }
 
 void loop() {
@@ -135,25 +140,26 @@ void loop() {
 
   base.run();
   elbow.run();
-
   seg3.write(map(effReading.getValue(),0,1023,0,180));
-  //basePrevious = basePos;
-  //elbowPrevious = elbowPos;
   
   // write servo values (they will change when interrupts are  t r i g g e r e d)
+  int clawpos = claw.read();
+  clawpos +=claw_moving_dir;
+  clawpos = constrain(clawpos,0,180); // WARNING: these are probably horrifyingly wrong stop values
+  claw.write(clawpos);
 }
 
-void isr_flip() { // currently unused until effector is sorted out
-  flipPos = flipPos - change;
-  if (flipPos == invert && coinsLeft == 0) {
-    coinsLeft = 10;
-  }
+void isr_left_press() {
+  claw_moving_dir = -1; // must check direction
 }
 
-void isr_eject() {
-  // set a global flag variable to request an eject
-  if (isFlipping == 0) {
-    isFlipping = 1;
-  }
+void isr_release() { // when either button is release
+  claw_moving_dir = 0;
 }
+
+void isr_right_press() {
+  claw_moving_dir = 1;
+}
+
+  
 
