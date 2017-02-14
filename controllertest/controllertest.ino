@@ -110,13 +110,12 @@ void setup() {
   unfold();
   // set user inputs, digital
   // TODO: actually map ISRs to interrupt pins
-  // obviously the buttons have to be on the right pins
-  // and as it is now they have to be a pulldown resistor config
-  claw.attach(22); // pin number TBD
-  attachInterrupt(digitalPinToInterrupt(20),isr_left_press,RISING); // check parameters against hardware config
-  attachInterrupt(digitalPinToInterrupt(20),isr_release,FALLING);
-  attachInterrupt(digitalPinToInterrupt(21),isr_release,FALLING);
-  attachInterrupt(digitalPinToInterrupt(21),isr_right_press,RISING);
+  // both buttons currently used have pulldown resistors on the pin's node, so rising = pressed
+  claw.attach(5); // pin number TBD
+  attachInterrupt(digitalPinToInterrupt(24),isr_left_press,RISING); // check parameters against hardware config
+  attachInterrupt(digitalPinToInterrupt(24),isr_release,FALLING);
+  attachInterrupt(digitalPinToInterrupt(22),isr_release,FALLING);
+  attachInterrupt(digitalPinToInterrupt(22),isr_right_press,RISING);
 }
 
 void loop() {
