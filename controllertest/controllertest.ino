@@ -41,6 +41,7 @@ const int baseMax = 1000; // need to check this
 // misc vars
 int pos = 1000;
 int elbpos = 150;
+int clawpos = 90; // initial value for claw
 
 // interrupt vars
 volatile char claw_moving_dir = 0;
@@ -96,7 +97,7 @@ void unfold() {
   elbow.moveTo(elbpos);
   
   delay(100);
-  seg3.attach(6);
+  
   seg3.write(45);
   delay(100);
   elbow.moveTo(40);
@@ -110,6 +111,8 @@ void unfold() {
 void setup() {
   Serial.begin(9600);
   // put your setup code here, to run once:
+  seg3.attach(6);
+  seg3.write(180);
   unfold();
   pinMode(rightbutton,INPUT);
   pinMode(leftbutton,INPUT);
@@ -144,7 +147,7 @@ void loop() {
   seg3.write(map(effReading.getValue(),0,1023,0,180));
   
   // write servo values (they will change when interrupts are  t r i g g e r e d)
-  int clawpos = claw.read();
+  
   if(digitalRead(rightbutton)) clawpos++;
   if(digitalRead(leftbutton)) clawpos--;
   clawpos = constrain(clawpos,0,180); // WARNING: these are probably horrifyingly wrong stop values
