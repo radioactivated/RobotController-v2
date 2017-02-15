@@ -1,3 +1,5 @@
+#include <ResponsiveAnalogRead.h>
+
 // #include <ResponsiveAnalogRead.h>
 
 #include <Servo.h>
@@ -25,8 +27,8 @@ ResponsiveAnalogRead elbowReading(elbowPotPin,true);
 ResponsiveAnalogRead effReading(effectorPotPin,true);
 
 // add some buttons or whatever
-const byte flip = 22; // not actually used yet
-const byte refoldButton = 24; // to be implemented for that bonus
+const byte rightbutton = 22; // 
+const byte leftbutton = 24; //
 // misc consts
 // flip consts
 const byte normal = 0; // not verified
@@ -106,8 +108,11 @@ void unfold() {
 }
 
 void setup() {
+  Serial.begin(9600);
   // put your setup code here, to run once:
   unfold();
+  pinMode(rightbutton,INPUT);
+  pinMode(leftbutton,INPUT);
   // set user inputs, digital
   // TODO: actually map ISRs to interrupt pins
   // both buttons currently used have pulldown resistors on the pin's node, so rising = pressed
@@ -143,22 +148,14 @@ void loop() {
   
   // write servo values (they will change when interrupts are  t r i g g e r e d)
   int clawpos = claw.read();
-  clawpos +=claw_moving_dir;
+  if(digitalRead(rightbutton)) clawpos++;
+  if(digitalRead(leftbutton)) clawpos--;
   clawpos = constrain(clawpos,0,180); // WARNING: these are probably horrifyingly wrong stop values
+  
   claw.write(clawpos);
+
 }
 
-void isr_left_press() {
-  claw_moving_dir = -1; // must check direction
-}
-
-void isr_release() { // when either button is release
-  claw_moving_dir = 0;
-}
-
-void isr_right_press() {
-  claw_moving_dir = 1;
-}
 
   
 
