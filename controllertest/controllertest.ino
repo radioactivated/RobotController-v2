@@ -117,10 +117,7 @@ void setup() {
   // TODO: actually map ISRs to interrupt pins
   // both buttons currently used have pulldown resistors on the pin's node, so rising = pressed
   claw.attach(5); // pin number TBD
-  attachInterrupt(digitalPinToInterrupt(24),isr_left_press,RISING); // check parameters against hardware config
-  attachInterrupt(digitalPinToInterrupt(24),isr_release,FALLING);
-  attachInterrupt(digitalPinToInterrupt(22),isr_release,FALLING);
-  attachInterrupt(digitalPinToInterrupt(22),isr_right_press,RISING);
+ 
 }
 
 void loop() {
