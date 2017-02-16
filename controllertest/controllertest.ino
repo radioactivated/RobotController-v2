@@ -156,6 +156,8 @@ void loop() {
   
   claw.write(clawpos);
 
+  delay(10); // small delay to make polling the switches more sensible
+             // shouldn't be significant enough to cause that much input lag
 }
 
 
