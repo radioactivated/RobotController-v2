@@ -63,6 +63,8 @@ void unfold() {
   while(hinge.distanceToGo() != 0) hinge.run();
   //delay(100);
 
+  hinge.disableOutputs(); // reduces driver overheating and power consumption
+
   pinMode(3,OUTPUT);
   digitalWrite(3,HIGH);
   pinMode(11,OUTPUT);
