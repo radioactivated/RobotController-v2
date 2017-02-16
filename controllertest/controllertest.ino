@@ -100,13 +100,13 @@ void unfold() {
   
   delay(100);
   
-  seg3.write(45);
-  delay(100);
+  //seg3.write(45);
+  //delay(100);
   elbow.moveTo(40);
   while(elbow.distanceToGo() != 0) elbow.run();
   delay(100);
   elbow.moveTo(elbpos);
-  seg3.write(90);
+  //seg3.write(90);
   delay(50);
 }
 
