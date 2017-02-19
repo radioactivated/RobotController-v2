@@ -136,8 +136,8 @@ void loop() {
   basePos = map(basePos,0,1023,0,980);
   basePos = constrain(basePos,0,980);
   int elbowPos = elbowReading.getValue();
-  elbowPos = map(elbowPos, 69, 1013, 10, 180);
-  elbowPos = constrain(elbowPos,10,180);
+  elbowPos = map(elbowPos, 69, 1013, 0, 200);
+  elbowPos = constrain(elbowPos,0,200);
   // stepper moveTo and runs
   //if(abs(basePos - basePrevious) > 3)
   base.moveTo(basePos);
