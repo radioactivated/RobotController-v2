@@ -41,7 +41,7 @@ const int baseMax = 1000; // need to check this
 // misc vars
 int pos = 1000;
 int elbpos = 150;
-int clawpos = 90; // initial value for claw
+int clawpos = 1500; // initial value for claw
 
 // interrupt vars
 volatile char claw_moving_dir = 0;
@@ -149,12 +149,12 @@ void loop() {
   seg3.write(map(effReading.getValue(),0,1023,0,180));
   
   // write servo values (they will change when interrupts are  t r i g g e r e d)
+  // TODO: these values may not be the correct ones, testing needed
+  if(digitalRead(rightbutton)) clawpos+=1; // TODO: make opening slow
+  if(digitalRead(leftbutton)) clawpos-=100; // but keep closing super fast
+  clawpos = (int) constrain(clawpos,1000,2300); // WARNING: these are probably horrifyingly wrong stop values
   
-  if(digitalRead(rightbutton)) clawpos++;
-  if(digitalRead(leftbutton)) clawpos--;
-  clawpos = constrain(clawpos,0,180); // WARNING: these are probably horrifyingly wrong stop values
-  
-  claw.write(clawpos);
+  claw.write(map(clawpos,1000,2300,0,180));
 
   
 }
